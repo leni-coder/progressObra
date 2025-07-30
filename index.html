@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Progresso da obra</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 10px;
+      font-family: sans-serif;
+      display: flex;
+      flex-direction: row;
+      align-items:flex-start;
+      gap: 10px;
+      background: linear-gradient(90deg,rgba(42, 155, 85, 1) 0%, rgba(87, 199, 132, 0.8) 50%, rgba(83, 237, 170, 0.84) 100%)
+    }
+    #container {
+      position: relative;
+      width: 95%;
+      height: 95vh;
+      border: 3px solid white;
+      overflow: hidden;
+      background-color: #3a3636;      /* fundo escuro */
+      color: #f5f5f5; 
+    }
+    canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      cursor: crosshair;
+      background:  #3a3636; 
+      color: #f5f5f5;
+    }
+    #linhaControls {
+      display: none;
+      gap: 5px;
+      margin-top: 30px;
+      align-self: center;
+    }
+    #larguraValor{
+        margin-left: 10px;
+        margin-right: 10px;
+        padding: 10px 15px;
+       font-size: 14px;
+        background: linear-gradient(90deg, rgb(129, 42, 155) 7%, rgba(87, 199, 133, 1) 77%, rgba(83, 232, 237, 1) 100%);
+    color: white;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center; /* Centraliza o texto */
+
+    }
+    #menu {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 8px;
+      position: relative;
+      left: 0;
+      top: 0;
+      min-width: 220px;
+      padding: 20px 10px;
+      border: 3px solid white;
+      box-shadow: 4px 4px 4px rgba(0, 0, 0, 0.1);
+      height: 95vh;
+      box-sizing: border-box;
+    background: rgba(42, 149, 155, 1)}
+    /* ...existing code... */
+#pdfInput::-webkit-file-upload-button {
+  visibility: visible;
+}
+#pdfInput::file-selector-button {
+  visibility: visible;
+}
+#pdfInput {
+  color: transparent;
+  
+}
+#finalizarBtn{
+    align-self: center;
+}
+
+
+ #feitoBtn, #desfazerBtn, #finalizarBtn, #aumentarLinhaBtn, #diminuirLinhaBtn {
+    background: linear-gradient(90deg, rgb(129, 42, 155) 7%, rgba(87, 199, 133, 1) 77%, rgba(83, 232, 237, 1) 100%);
+    color: white;
+    border: 2px solid #bdbdbd;
+    padding: 10px 15px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 14px;
+    box-shadow: 0 4px 0 #888, 0 2px 8px rgba(0,0,0,0.15);
+    transition: box-shadow 0.2s, transform 0.2s;
+    
+}
+#progressoAmarelo{
+    background: linear-gradient(90deg, rgb(129, 42, 155) 7%, rgba(87, 199, 133, 1) 77%, rgba(83, 232, 237, 1) 100%);
+    color: white;
+    padding: 10px 15px;
+    border-radius: 10px;
+    align-self: center; /* Centraliza na div menu */
+    margin-top: 100px;
+}
+#finalizarBtn{
+    align-self: center;
+    margin-top: 50px;
+   
+}
+
+#pdfInput:active {
+
+    transform: translateY(2px);
+      
+}
+#pdfInput::-webkit-file-upload-button:hover{
+    background: rgba(83, 232, 237, 1);
+    color: #222; /* texto escuro para contraste */
+    border-color: rgba(83, 232, 237, 1);
+    box-shadow: none;
+    transform: translateY(2px);
+}
+#pdfInput::file-selector-button,
+#pdfInput::-webkit-file-upload-button {
+    background: linear-gradient(90deg, rgb(129, 42, 155) 7%, rgba(87, 199, 133, 1) 77%, rgba(83, 232, 237, 1) 100%);
+    color: white;
+    border: 2px solid #bdbdbd;
+    padding: 10px 15px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 14px;
+     box-shadow: 4px 4px 4px #888, 0 2px 8px rgba(0,0,0,0.15);
+    transition: box-shadow 0.2s, transform 0.2s;
+  
+}
+
+#feitoBtn:hover,
+#desfazerBtn:hover,
+#finalizarBtn:hover,
+#aumentarLinhaBtn:hover,
+#diminuirLinhaBtn:hover,
+#feitoBtn:active,
+#desfazerBtn:active,
+#finalizarBtn:active,
+#aumentarLinhaBtn:active,
+#diminuirLinhaBtn:active {
+    background: rgba(83, 232, 237, 1);
+    color: #222; /* texto escuro para contraste */
+    border-color: rgba(83, 232, 237, 1);
+    box-shadow: none;
+    transform: translateY(2px);
+}
+#aumentarLinhaBtn,
+#diminuirLinhaBtn{
+    font-size: 20px;
+    font-weight: none;
+}
+
+/* ...existing code... */
+
+  </style>
+
+
+</head>
+<body>
+   
+  
+ <div id="menu">
+  <input type="file" id="pdfInput" accept="application/pdf" />
+  <button id="feitoBtn" disabled>Feito (Recortar)</button>
+  <button id="desfazerBtn">Desfazer</button>
+   
+    <div id="linhaControls">
+   <button id="aumentarLinhaBtn">+</button>
+    <span id="larguraValor">20px</span>
+    <button id="diminuirLinhaBtn">-</button>
+      </div>
+  <div id="progressoAmarelo">Progresso: 0%</div>
+  <button id="finalizarBtn" style="display:none;">Baixar PNG</button>
+  
+</div>
+  <div id="container">
+    <canvas id="canvas"></canvas>
+  </div>
+  
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <script>
+    const container = document.getElementById('container');
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    const pdfInput = document.getElementById('pdfInput');
+    const feitoBtn = document.getElementById('feitoBtn');
+    const desfazerBtn = document.getElementById('desfazerBtn');
+    const finalizarBtn = document.getElementById('finalizarBtn');
+    const linhaControls = document.getElementById('linhaControls');
+    const aumentarLinhaBtn = document.getElementById('aumentarLinhaBtn');
+    const diminuirLinhaBtn = document.getElementById('diminuirLinhaBtn');
+    const larguraValor = document.getElementById('larguraValor');
+    const progressoAmareloDiv = document.getElementById('progressoAmarelo');
+
+    let isDrawing = false;
+    let isPanning = false;
+    let originalImage = new Image();
+    let matrizPontos = [];
+    let matrizAmarela = [];
+    let scale = 1, offsetX = 0, offsetY = 0, startPanX = 0, startPanY = 0;
+    let modoAmarelo = false;
+    let linhaAmarelaLargura = 20;
+    let historicoAmarelo = [];
+
+    function atualizarLarguraValor(){
+      larguraValor.textContent = `${linhaAmarelaLargura}px`;
+    }
+
+    function getCanvasCoordinates(e) {
+      const rect = canvas.getBoundingClientRect();
+      return {
+        x: Math.floor((e.clientX - rect.left - offsetX) / scale),
+        y: Math.floor((e.clientY - rect.top - offsetY) / scale)
+      };
+    }
+
+    async function renderPDF(file) {
+      const typedArray = new Uint8Array(file);
+      const pdf = await pdfjsLib.getDocument({ data: typedArray }).promise;
+      const page = await pdf.getPage(1);
+      const viewport = page.getViewport({ scale: 2 });
+
+      canvas.width = viewport.width;
+      canvas.height = viewport.height;
+
+      const renderContext = { canvasContext: ctx, viewport: viewport };
+      await page.render(renderContext).promise;
+
+      originalImage = new Image();
+      originalImage.src = canvas.toDataURL();
+      originalImage.onload = () => redrawCanvas();
+    }
+
+    function redrawCanvas() {
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.setTransform(scale, 0, 0, scale, offsetX, offsetY);
+      ctx.drawImage(originalImage, 0, 0);
+
+      if (!modoAmarelo && matrizPontos.length > 0) {
+        ctx.beginPath();
+        ctx.lineWidth = 4 / scale;
+        ctx.strokeStyle = 'red';
+        ctx.moveTo(matrizPontos[0][0], matrizPontos[0][1]);
+        for (let i = 1; i < matrizPontos.length; i++) ctx.lineTo(matrizPontos[i][0], matrizPontos[i][1]);
+        ctx.stroke();
+      }
+
+      if (modoAmarelo) {
+        ctx.globalAlpha = 0.4; // Transparência aplicada
+        historicoAmarelo.forEach(linha => {
+          ctx.beginPath();
+          ctx.lineWidth = linhaAmarelaLargura / scale;
+          ctx.strokeStyle = 'yellow';
+          ctx.moveTo(linha[0][0], linha[0][1]);
+          for (let i = 1; i < linha.length; i++) ctx.lineTo(linha[i][0], linha[i][1]);
+          ctx.stroke();
+        });
+        if (matrizAmarela.length > 0) {
+          ctx.beginPath();
+          ctx.lineWidth = linhaAmarelaLargura / scale;
+          ctx.strokeStyle = 'yellow';
+          ctx.moveTo(matrizAmarela[0][0], matrizAmarela[0][1]);
+          for (let i = 1; i < matrizAmarela.length; i++) ctx.lineTo(matrizAmarela[i][0], matrizAmarela[i][1]);
+          ctx.stroke();
+        }
+        ctx.globalAlpha = 1.0; // Restaura opacidade normal
+      }
+    }
+
+    pdfInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => renderPDF(reader.result);
+      reader.readAsArrayBuffer(file);
+      feitoBtn.disabled = true;
+      matrizPontos = [];
+    });
+
+    canvas.addEventListener('mousedown', (e) => {
+      if (e.button === 1) {
+        isPanning = true;
+        startPanX = e.clientX - offsetX;
+        startPanY = e.clientY - offsetY;
+      } else if (e.button === 0) {
+        isDrawing = true;
+        const { x, y } = getCanvasCoordinates(e);
+        if (!modoAmarelo) matrizPontos = [[x, y]];
+        else matrizAmarela = [[x, y]];
+      }
+    });
+
+    canvas.addEventListener('mousemove', (e) => {
+      if (isPanning) {
+        offsetX = e.clientX - startPanX;
+        offsetY = e.clientY - startPanY;
+        redrawCanvas();
+      } else if (isDrawing) {
+        const { x, y } = getCanvasCoordinates(e);
+        if (!modoAmarelo) {
+          matrizPontos.push([x, y]);
+        } else {
+          matrizAmarela.push([x, y]);
+        }
+        redrawCanvas();
+      }
+    });
+
+    canvas.addEventListener('mouseup', () => {
+      isDrawing = false;
+      isPanning = false;
+      if (!modoAmarelo && matrizPontos.length > 0) feitoBtn.disabled = false;
+      if (modoAmarelo && matrizAmarela.length > 0) {
+        historicoAmarelo.push([...matrizAmarela]);
+        matrizAmarela = [];
+        atualizarProgressoAmarelo();
+      }
+    });
+
+    container.addEventListener('wheel', (e) => {
+      e.preventDefault();
+      const zoomIntensity = 0.1;
+      const mouseX = (e.clientX - container.getBoundingClientRect().left - offsetX) / scale;
+      const mouseY = (e.clientY - container.getBoundingClientRect().top - offsetY) / scale;
+      const wheel = e.deltaY < 0 ? 1 + zoomIntensity : 1 - zoomIntensity;
+      scale *= wheel;
+      offsetX -= (mouseX * (wheel - 1)) * scale;
+      offsetY -= (mouseY * (wheel - 1)) * scale;
+      redrawCanvas();
+    });
+
+    feitoBtn.addEventListener('click', () => {
+      if (matrizPontos.length === 0) return alert("Nenhuma área marcada.");
+      const xs = matrizPontos.map(p => p[0]);
+      const ys = matrizPontos.map(p => p[1]);
+      const minX = Math.min(...xs), maxX = Math.max(...xs), minY = Math.min(...ys), maxY = Math.max(...ys);
+      const tempCanvas = document.createElement('canvas');
+      const tempCtx = tempCanvas.getContext('2d');
+      tempCanvas.width = canvas.width;
+      tempCanvas.height = canvas.height;
+      tempCtx.drawImage(originalImage, 0, 0);
+      const crop = tempCtx.getImageData(minX, minY, maxX - minX, maxY - minY);
+      canvas.width = maxX - minX;
+      canvas.height = maxY - minY;
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      ctx.putImageData(crop, 0, 0);
+      originalImage.src = canvas.toDataURL();
+      scale = 1; offsetX = 0; offsetY = 0;
+      matrizPontos = [];
+      feitoBtn.disabled = true;
+      modoAmarelo = true;
+      linhaControls.style.display = "flex";
+      finalizarBtn.style.display = "inline-block";
+      
+    });
+
+    desfazerBtn.addEventListener('click', () => {
+      if (modoAmarelo && historicoAmarelo.length > 0) {
+        historicoAmarelo.pop();
+        redrawCanvas();
+        atualizarProgressoAmarelo();
+      }
+    });
+
+    aumentarLinhaBtn.addEventListener('click', () => { 
+            if (linhaAmarelaLargura < 200){
+               linhaAmarelaLargura += 10;
+               atualizarLarguraValor();
+            }
+    });
+    diminuirLinhaBtn.addEventListener('click', () => { 
+        if (linhaAmarelaLargura > 10) {
+            linhaAmarelaLargura -= 10;
+            atualizarLarguraValor();
+        }
+    });
+
+    finalizarBtn.addEventListener('click', () => {
+      const link = document.createElement('a');
+      link.download = 'Progresso.png';
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    });
+
+    function atualizarProgressoAmarelo() {
+      const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      const d = imgData.data;
+
+      const isColorido = (r, g, b) => !(r === g && g === b); // exclui preto e cinza
+
+      let linhasReta = [];
+      let currentLine = [];
+
+      for (let y = 0; y < canvas.height; y++) {
+        currentLine = [];
+        for (let x = 0; x < canvas.width; x++) {
+          const i = (y * canvas.width + x) * 4;
+          const r = d[i], g = d[i+1], b = d[i+2];
+          if (isColorido(r,g,b)) currentLine.push({x,y});
+          else if (currentLine.length>5) { linhasReta.push([...currentLine]); currentLine=[]; }
+          else currentLine=[];
+        }
+        if (currentLine.length>5) linhasReta.push([...currentLine]);
+      }
+
+      let totalPixels = 0;
+      let amareloPixels = 0;
+      linhasReta.forEach(linha=>{
+        totalPixels+=linha.length;
+        linha.forEach(p=>{
+          const idx=(p.y*canvas.width+p.x)*4;
+          if (d[idx] > 200 && d[idx+1] > 200 && d[idx+2] < 150) amareloPixels++;
+        });
+      });
+
+      const porcentagem = totalPixels>0 ? ((amareloPixels/totalPixels)*100).toFixed(1):0;
+      progressoAmareloDiv.textContent = `Progresso: ${porcentagem}%`;
+    }
+  </script>
+</body>
+</html>
