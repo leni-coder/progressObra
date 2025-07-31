@@ -239,6 +239,100 @@
     let modoAmarelo = false;
     let linhaAmarelaLargura = 20;
     let historicoAmarelo = [];
+    
+    // ...Código para alterar eventos para celular...
+
+let lastTouchDist = null;
+let lastTouchMid = null;
+let isTouchDrawing = false;
+
+// Função para calcular distância entre dois toques
+function getTouchDist(touches) {
+  const dx = touches[0].clientX - touches[1].clientX;
+  const dy = touches[0].clientY - touches[1].clientY;
+  return Math.sqrt(dx * dx + dy * dy);
+}
+
+// Função para calcular ponto médio entre dois toques
+function getTouchMid(touches) {
+  return {
+    x: (touches[0].clientX + touches[1].clientX) / 2,
+    y: (touches[0].clientY + touches[1].clientY) / 2
+  };
+}
+
+canvas.addEventListener('touchstart', (e) => {
+  if (e.touches.length === 1) {
+    // Um dedo: começa a desenhar/marcar
+    isTouchDrawing = true;
+    const { x, y } = getCanvasCoordinates(e.touches[0]);
+    if (!modoAmarelo) matrizPontos = [[x, y]];
+    else matrizAmarela = [[x, y]];
+  } else if (e.touches.length === 2) {
+    // Dois dedos: prepara para zoom ou pan
+    lastTouchDist = getTouchDist(e.touches);
+    lastTouchMid = getTouchMid(e.touches);
+  }
+});
+
+canvas.addEventListener('touchmove', (e) => {
+  e.preventDefault();
+  if (e.touches.length === 1 && isTouchDrawing) {
+    // Um dedo: desenhando/marcando
+    const { x, y } = getCanvasCoordinates(e.touches[0]);
+    if (!modoAmarelo) {
+      matrizPontos.push([x, y]);
+    } else {
+      matrizAmarela.push([x, y]);
+    }
+    redrawCanvas();
+  } else if (e.touches.length === 2) {
+    // Dois dedos: zoom ou pan
+    const newDist = getTouchDist(e.touches);
+    const newMid = getTouchMid(e.touches);
+
+    // Zoom
+    if (lastTouchDist) {
+      const zoomIntensity = 0.005;
+      const wheel = 1 + (newDist - lastTouchDist) * zoomIntensity;
+      scale *= wheel;
+
+      // Ajusta o offset para manter o ponto médio centralizado
+      const rect = canvas.getBoundingClientRect();
+      const mouseX = (newMid.x - rect.left - offsetX) / scale;
+      const mouseY = (newMid.y - rect.top - offsetY) / scale;
+      offsetX -= (mouseX * (wheel - 1)) * scale;
+      offsetY -= (mouseY * (wheel - 1)) * scale;
+    }
+
+    // Pan
+    if (lastTouchMid) {
+      offsetX += (newMid.x - lastTouchMid.x);
+      offsetY += (newMid.y - lastTouchMid.y);
+    }
+
+    lastTouchDist = newDist;
+    lastTouchMid = newMid;
+    redrawCanvas();
+  }
+});
+
+canvas.addEventListener('touchend', (e) => {
+  if (e.touches.length === 0) {
+    // Finaliza desenho/marcação
+    isTouchDrawing = false;
+    if (!modoAmarelo && matrizPontos.length > 0) feitoBtn.disabled = false;
+    if (modoAmarelo && matrizAmarela.length > 0) {
+      historicoAmarelo.push([...matrizAmarela]);
+      matrizAmarela = [];
+      atualizarProgressoAmarelo();
+    }
+    lastTouchDist = null;
+    lastTouchMid = null;
+  }
+});
+
+// ...Código para alterar eventos para celular
 
     function atualizarLarguraValor(){
       larguraValor.textContent = `${linhaAmarelaLargura}px`;
